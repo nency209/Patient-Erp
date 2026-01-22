@@ -14,13 +14,13 @@ const app = express();
 
 
 
-app.use(cors())
+// app.use(cors())
 
-// app.use(cors({
-//   origin: 'https://patient-erp.vercel.app', 
-//   credentials: true,
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"] // Explicitly allow all methods
-// }));
+app.use(cors({
+  origin: 'https://patient-erp.vercel.app', 
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"] // Explicitly allow all methods
+}));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
