@@ -18,7 +18,7 @@ router.get("/:id", getPatientById);
 router.put("/:id", updatePatient);    // Add this line
 router.delete("/:id", deletePatient); // Add this line
 router.post("/:id/followups", addFollowUp);
-router.put("/:id/followups/:followUpId", updateFollowUp);
+router.put('/:patientId/followups/:followUpId', updateFollowUp);
 router.delete("/:id/followups/:followUpId", deleteFollowUp);
 
 export default router;

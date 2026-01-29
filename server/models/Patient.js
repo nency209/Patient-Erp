@@ -1,4 +1,3 @@
-// models/Patient.js
 import mongoose from "mongoose";
 
 const MedicineItemSchema = new mongoose.Schema({
@@ -13,7 +12,8 @@ const MedicineGroupSchema = new mongoose.Schema({
   subMedicines: [MedicineItemSchema], 
   timings: {
     am: { type: String },
-    pm: { type: String }
+    pm: { type: String },
+    freq: { type: String } // Added this based on your frontend payload
   },
   bottleNumber: { type: Number, enum: [1, 2, 3] },
   suggestion: { type: String },
@@ -23,8 +23,13 @@ const MedicineGroupSchema = new mongoose.Schema({
 // Define the follow-up visit schema
 const FollowUpSchema = new mongoose.Schema({
   date: { type: String, required: true },
-  notes: { type: String }, // Optional
-  previousAppointment: { type: String,}, // Mandatory
+  notes: { type: String }, 
+  
+  // ✅ FIXED: Added these fields so they can be saved
+  pastHistory: { type: String },
+  visitObservation: { type: String },
+  
+  previousAppointment: { type: String }, 
   medicines: [MedicineGroupSchema],
   overallSuggestion: { type: String },
 });
@@ -43,7 +48,7 @@ const PatientSchema = new mongoose.Schema(
     pMainDate: { 
       type: String, 
       required: true, 
-      default: () => new Date().toISOString().split('T')[0] // Defaults to today's date
+      default: () => new Date().toISOString().split('T')[0] 
     },
     maritalStatus: { type: String, default: "Unmarried" },
     work: { type: String },
@@ -60,8 +65,8 @@ const PatientSchema = new mongoose.Schema(
       pastHistory: { type: String },
       additional: [String]
     },
-    medicines: [MedicineGroupSchema], // Initial prescription
-    followUps: [FollowUpSchema],      // Visit history array
+    medicines: [MedicineGroupSchema], 
+    followUps: [FollowUpSchema],      
     overallSuggestion: { type: String },
   },
   { timestamps: true }

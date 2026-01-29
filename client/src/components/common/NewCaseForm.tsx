@@ -99,7 +99,7 @@ export function NewCaseForm({ onNavigate,  initialData }: NewCaseFormProps) {
 
   const handleBunchChange = (groupId: string, bunchName: string) => {
     let medicines: MedicineItem[] = [];
-    if (bunchName === "Main") {
+    if (bunchName === "Main" || bunchName === "Main2") {
       medicines = Array(7).fill(null).map(() => ({ name: '', reason: '', showReason: false }));
     } else {
       const selectedBunch = bunches.find(b => b.name === bunchName);
@@ -346,6 +346,7 @@ export function NewCaseForm({ onNavigate,  initialData }: NewCaseFormProps) {
                             <select className="w-full h-10 border rounded-md px-3 bg-white text-sm" value={group.mainCategory} onChange={(e) => handleBunchChange(group.id, e.target.value)}>
                               <option value="">-- Select --</option>
                               <option value="Main">Main</option>
+                               <option value="Main2">Main2</option>
                               {bunches.map((b) => <option key={b._id} value={b.name}>{b.name}</option>)}
                             </select>
                           </div>

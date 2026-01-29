@@ -176,7 +176,7 @@ export function PatientHistory({ onNavigate }: { onNavigate: (page: string) => v
   // --- PDF GENERATION ---
   const downloadPatientPDF = (patient: Patient) => {
     const doc = new jsPDF() as jsPDFCustom;
-    const dateStr = format(new Date(), 'dd-MMM-yyyy');
+    const dateStr = format(new Date(), 'dd-MM-yyyy');
     const themeColor = [30, 58, 138] as [number, number, number]; // Dark Blue
     const subHeaderColor = [59, 130, 246] as [number, number, number]; // Lighter Blue
 
@@ -215,7 +215,7 @@ export function PatientHistory({ onNavigate }: { onNavigate: (page: string) => v
         ['Spouse Details', spouseInfo],
         ['Children', childInfo],
         ['Physical Stats', `Weight: ${patient.weight || '-'} | Height: ${patient.height || '-'}`],
-        ['Registration Date', patient.pMainDate ? format(new Date(patient.pMainDate), 'dd-MMM-yyyy') : '-'],
+        ['Registration Date', patient.pMainDate ? format(new Date(patient.pMainDate), 'dd-MM-yyyy') : '-'],
       ],
       theme: 'grid',
       headStyles: { fillColor: themeColor, fontSize: 12, fontStyle: 'bold' },
@@ -283,7 +283,7 @@ export function PatientHistory({ onNavigate }: { onNavigate: (page: string) => v
       doc.setFontSize(11);
       doc.setTextColor(0);
       doc.setFont("helvetica", "bold");
-      doc.text(`Visit Date: ${format(new Date(visit.date), 'dd-MMM-yyyy')}`, 17, finalY + 7);
+      doc.text(`Visit Date: ${format(new Date(visit.date), 'dd-MM-yyyy')}`, 17, finalY + 7);
       
       finalY += 15;
 
@@ -580,7 +580,7 @@ export function PatientHistory({ onNavigate }: { onNavigate: (page: string) => v
                       {/* Date & Tag */}
                       <div className="flex items-center gap-3 mb-3">
                         <h3 className={`text-base font-black ${i === 0 ? 'text-blue-700' : 'text-slate-700'}`}>
-                            {format(new Date(f.date), 'MMMM do, yyyy')}
+                            {format(new Date(f.date), 'dd-MM-yyyy')}
                         </h3>
                         {i === 0 && <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">LATEST</span>}
                       </div>

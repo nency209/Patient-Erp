@@ -61,42 +61,37 @@ export const deletePatient = async (req, res) => {
 
 // controller/patientController.js
 
+
 export const addFollowUp = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { date, notes, previousAppointment, medicines, overallSuggestion } = req.body;
+  try {
+    const { 
+      date, 
+      notes, 
+      medicines, 
+      previousAppointment, 
+      overallSuggestion,
+      // Add these two:
+      pastHistory, 
+      visitObservation 
+    } = req.body;
 
-        // Ensure the mandatory field is present before attempting to save
-        if (!previousAppointment) {
-            return res.status(400).json({ message: "Previous Appointment date is required." });
-        }
+    const patient = await Patient.findById(req.params.id);
 
-        // Use findByIdAndUpdate with runValidators: true to catch schema issues
-        const updatedPatient = await Patient.findByIdAndUpdate(
-            id,
-            {
-                $push: {
-                    followUps: {
-                        date,
-                        notes,
-                        previousAppointment,
-                        medicines,
-                        overallSuggestion
-                    }
-                }
-            },
-            { new: true, runValidators: true } // Ensures the schema check happens
-        );
+    patient.followUps.push({
+      date,
+      notes,
+      medicines,
+      previousAppointment,
+      overallSuggestion,
+      pastHistory,       // ✅ Pass it to the array
+      visitObservation   // ✅ Pass it to the array
+    });
 
-        if (!updatedPatient) {
-            return res.status(404).json({ message: "Patient not found" });
-        }
-
-        res.status(200).json(updatedPatient);
-    } catch (error) {
-        console.error("Backend Save Error:", error.message);
-        res.status(500).json({ message: error.message });
-    }
+    await patient.save();
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // DELETE FOLLOW-UP
@@ -114,36 +109,59 @@ export const deleteFollowUp = async (req, res) => {
   }
 };
 
-// UPDATE FOLLOW-UP
-// Inside controller/patientController.js
+// controllers/patientController.js
 
 export const updateFollowUp = async (req, res) => {
   try {
-    const { id, followUpId } = req.params;
-    const { notes, previousAppointment, medicines, overallSuggestion, date } = req.body;
+    // 1. Debugging: Log the IDs to ensure they are being received
+    console.log("Patient ID:", req.params.patientId);
+    console.log("FollowUp ID:", req.params.followUpId);
+    console.log("Body:", req.body);
 
-    // Use $[elem] positional operator to update the specific follow-up in the array
-    const updatedPatient = await Patient.findOneAndUpdate(
-      { _id: id, "followUps._id": followUpId },
-      {
-        $set: {
-          "followUps.$[elem].notes": notes,
-          "followUps.$[elem].previousAppointment": previousAppointment,
-          "followUps.$[elem].medicines": medicines,
-          "followUps.$[elem].overallSuggestion": overallSuggestion,
-          "followUps.$[elem].date": date
-        }
-      },
-      {
-        arrayFilters: [{ "elem._id": followUpId }],
-        new: true,
-        runValidators: true
-      }
-    );
+    const { patientId, followUpId } = req.params;
+    
+    // 2. Extract ALL fields from the request body, INCLUDING pastHistory
+    const { 
+      date, 
+      notes, 
+      medicines, 
+      previousAppointment, 
+      overallSuggestion,
+      pastHistory,       // <--- CRITICAL: Extract this
+      visitObservation   // <--- CRITICAL: Extract this
+    } = req.body;
 
-    if (!updatedPatient) return res.status(404).json({ message: "Patient or Visit not found" });
-    res.status(200).json(updatedPatient);
+    // 3. Find the patient document
+    const patient = await Patient.findById(patientId);
+    
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found in database" });
+    }
+
+    // 4. Find the specific follow-up subdocument
+    const followUp = patient.followUps.id(followUpId);
+    
+    if (!followUp) {
+      return res.status(404).json({ message: "Follow-up record not found" });
+    }
+
+    // 5. Explicitly update the fields
+    followUp.date = date;
+    followUp.notes = notes;
+    followUp.medicines = medicines;
+    followUp.previousAppointment = previousAppointment;
+    followUp.overallSuggestion = overallSuggestion;
+    
+    // 6. Only update these if they exist in the payload
+    if (pastHistory !== undefined) followUp.pastHistory = pastHistory;
+    if (visitObservation !== undefined) followUp.visitObservation = visitObservation;
+
+    // 7. Save the parent document
+    await patient.save();
+
+    res.status(200).json(patient);
   } catch (error) {
+    console.error("Update Error:", error);
     res.status(500).json({ message: error.message });
   }
 };

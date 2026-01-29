@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/api/patientApi.ts
 import axiosInstance from './axiosInstance';
 
